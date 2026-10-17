@@ -70,3 +70,11 @@ table.t{border-collapse:collapse;width:100%;font-size:13px;text-align:center}
  .t{font-size:8.5px}.t th,.t td{padding:1px 0;min-width:0}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+
+.chips button{padding-left:0;padding-right:0}
+@media(max-width:480px){.chips{gap:4px}.chips button{font-size:13px}}
+.chips button.on[data-s=off]{background:#c9ced9}
+.sum span:nth-child(6){background:#e3e5ea}
+.row.st-off{background:#f1f2f5}
+.t .c-off{background:#cfd3dc;font-weight:700}
+.sw.c-off{background:#cfd3dc}
