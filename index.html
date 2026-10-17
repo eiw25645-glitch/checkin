@@ -58,6 +58,18 @@
 }
 .sum span{cursor:pointer;user-select:none}
 .sum span.on{box-shadow:0 0 0 3px var(--ink)}
+/* ตารางรายงาน: ลงสีเฉพาะ ลา สาย ขาด ครึ่งวัน หยุด (มา ไม่ลงสี) */
+.t .c-come{background:#fff}
+.sw.c-come{background:#fff}
+/* ตารางรวมบนมือถือ: เต็มความกว้าง ไม่ต้องเลื่อน */
+@media screen and (max-width:799px){
+ #report #area{margin:0 -14px;border-radius:0;border-width:1.2px 0;padding:6px 1px}
+ #report #area h3,#report #area p,#report #area .lg{padding:0 13px}
+ .t.wide{font-size:7px}
+ .t.wide th,.t.wide td{padding:2px 0;min-width:0}
+ .t.wide td.l,.t.wide th.l{padding:2px 2px;font-size:8px}
+ .t.wide th.wd{font-size:5.5px}
+}
 .found{min-height:18px;margin:-6px 4px 10px;font-size:14px;color:var(--mut);font-weight:700}
 </style>
 </head>
@@ -107,7 +119,8 @@
       <select id="sym"><option value="✓">มา แสดงเป็น ✓</option><option value="I">มา แสดงเป็น I</option><option value="ม">มา แสดงเป็น ม</option></select>
     </div>
     <div class="exports">
-      <button class="btn ghost" id="bPrint">🖨 พิมพ์ / PDF</button>
+      <button class="btn ghost" id="bPrint">🖨 พิมพ์</button>
+      <button class="btn ghost" id="bPdf">📄 โหลด PDF</button>
       <button class="btn ghost" id="bXls">📗 Excel</button>
       <button class="btn ghost" id="bImg">🖼 รูปภาพ</button>
     </div>
@@ -129,6 +142,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="app.js"></script>
 <script>
 /* ===== ส่วนเสริม (ใช้ได้กับ app.js เดิม ไม่ต้องแก้ app.js) ===== */
@@ -161,6 +175,15 @@
     dr();
     const p=$('#area p');
     if(p)p.innerHTML=p.innerHTML.replace(/โทร\s+([\d\-+]+)/,(m,n)=>tel(n));
+    const t=$('#tbl');
+    if(t&&view==='all'){
+      t.classList.add('wide');
+      // หัวคอลัมน์สรุปใช้ตัวย่อ ให้ตารางแคบลง
+      $$('#tbl tr:first-child th[rowspan="2"]').forEach(th=>{
+        const k=Object.keys(S).find(k=>S[k][0]===th.textContent);
+        if(k)th.textContent=S[k][1];
+      });
+    }
   };
   $('#month').onchange=$('#sym').onchange=$('#person').onchange=drawReport;
 
@@ -222,6 +245,33 @@
   }
   pull();setInterval(pull,5000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+
+  /* 5) ปุ่มโหลด PDF (แยกจากปุ่มพิมพ์) */
+  $('#bPdf').onclick=async()=>{
+    if(!window.html2canvas||!window.jspdf)return alert('โหลดตัวสร้าง PDF ไม่ได้ (ต้องต่อเน็ต)');
+    const b=$('#bPdf'),old=b.textContent;b.textContent='⏳ กำลังสร้าง...';
+    try{
+      const land=view==='all',box=document.createElement('div');
+      box.style.cssText='position:fixed;left:-99999px;top:0;background:#fff;padding:12px;width:'+(land?1400:720)+'px';
+      const cl=$('#area').cloneNode(true);
+      cl.removeAttribute('id');cl.style.cssText='border:0;border-radius:0;padding:0;margin:0;overflow:visible';
+      box.appendChild(cl);document.body.appendChild(box);
+      const c=await html2canvas(box,{scale:2,backgroundColor:'#fff'});
+      box.remove();
+      const pdf=new window.jspdf.jsPDF({orientation:land?'l':'p',unit:'mm',format:'a4'});
+      const W=pdf.internal.pageSize.getWidth()-10,H=pdf.internal.pageSize.getHeight()-10;
+      const sh=Math.floor(H*c.width/W);          // ความสูง (px) ที่ใส่ได้ต่อหน้า
+      for(let y=0,pg=0;y<c.height;y+=sh,pg++){
+        const h=Math.min(sh,c.height-y),s=document.createElement('canvas');
+        s.width=c.width;s.height=h;
+        s.getContext('2d').drawImage(c,0,y,c.width,h,0,0,c.width,h);
+        if(pg)pdf.addPage();
+        pdf.addImage(s.toDataURL('image/jpeg',.95),'JPEG',5,5,W,h*W/c.width);
+      }
+      pdf.save('เช็คชื่อ_'+$('#month').value+'.pdf');
+    }catch(e){alert('สร้าง PDF ไม่สำเร็จ')}
+    b.textContent=old;
+  };
 })();
 </script>
 </body>
