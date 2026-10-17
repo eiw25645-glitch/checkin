@@ -2,12 +2,12 @@
 const ADMIN_CODE='5555';
 const S={come:['มา','ม'],leave:['ลา','ล'],late:['สาย','ส'],absent:['ขาด','ข'],half:['ครึ่งวัน','ค']};
 const WD=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
-const SEED=[['กฤษฏา','จิตร'],['สุวิทย์','วิทย์'],['อาทิตย์','การ'],['ไชยชนะ','นะ'],['วรกร','เกียรติ'],['สม','สม'],['พีรดล','เติ้ล'],['สุชินทร์','ชิน'],['สุนิสา','น้ำตาล'],['ชุติเทพ','เทพ'],['นิคม','คม'],['กฤษฎา','แบงค์'],['ทรัพทวี','วี'],['บุญ','บุญ'],['แดนชัย','อั้ม'],['สมนึก','นึก'],['กชกฤกษ์','มอส'],['สนธิยา','อิ๋ว'],['คมสัน','สัน'],['ทรงพล','มาย'],['เดชา','เรย์'],['บุญช่วย','บุญช่วย'],['โยธิน','โยธิน'],['ออม','ออม'],['อ้อ','อ้อ'],['โอ๋','โอ๋']];
+const SEED=[["กฤษฎา", "สาแก้ว", "สมจิตร", "ขับรถแม็คโคร", "080-124-3772"], ["สุวิทย์", "ตันเขื่อนแก้ว", "วิทย์", "ขับรถแม็คโคร", "089-597-8521"], ["อาทิตย์", "อุตรชน", "สงกาน", "ขับรถแม็คโคร", "084-368-1595"], ["ไชยชนะ", "พูลศิลป์", "นะ", "ขับรถหัวลาก", "089-059-2117"], ["สม", "ขัดโน", "สม", "ขับรถแม็คโคร", "063-594-3452"], ["วรกร", "ก้อนสันทะ", "เกียรติ", "ขับรถ 10 ล้อ", "096-226-3490"], ["พีรดล", "โนจร", "เติ้ล", "เซอร์เวย์", "093-808-1534"], ["สุชินทร์", "นิลคง", "ชิน", "ขับรถบดหนาม", "092-587-5784"], ["สุนิสา", "กาวิน", "น้ำตาล", "บัญชี", "093-248-7188"], ["ชุติเทพ", "ธัญญะ", "เทพ", "ขับรถเกรด", "084-756-4355"], ["กฤษฎา", "ยาธิ", "แบงค์", "ขับรถ 10 ล้อ", "083-200-2965"], ["ทรัพทวี", "พิชัย", "วี", "เซอร์เวย์", "065-010-3660"], ["กชกฤกษณ์", "ป้องแก้ว", "มอส", "ขับรถแม็คโคร", "062-441-0442"], ["สนธิยา", "วงศ์พุฒ", "อิ๋ว", "ธุรการ", "064-546-9128"], ["โยธิน", "จรุงพันธ์", "โย", "ขับรถน้ำ", "063-117-9124"], ["ชัชวาล", "สุวรรณ์", "กบ", "ผู้ช่วยเซอร์เวย์", "093-313-6408"], ["นิพพิชฌน์", "แก้วโก๋", "ทีม", "ผู้ช่วยเซอร์เวย์", "098-785-5786"], ["สมนึก", "วงศ์พุธคำ", "นึก", "ขับรถเทรลเลอร์", "098-538-1854"], ["สมศักดิ์", "ผงลังกา", "สมศักดิ์", "ขับรถ 10 ล้อ", "097-996-8193"], ["ศรีทุ่ง", "มะนิลทิพ", "ทุ่ง", "ขับรถแม็คโคร", "064-281-8741"], ["ศราวุธ", "ขันชัย", "แก่น", "ขับรถตัก", "061-654-2832"], ["เอกชัย", "บุญมี", "มี่", "ผู้ช่วยเซอร์เวย์", "081-316-4365"], ["นิคม", "เทพก๋อง", "คม", "ขับรถแม็คโคร", "095-706-4954"], ["ธนพล", "สุริยะ", "ต้า", "ผู้ช่วยเซอร์เวย์", "081-306-9742"], ["คมเพชร", "ท่าคำ", "หนึ่ง", "ขับรถ 10 ล้อ", "096-142-1412"], ["วิมล", "โพธ์ประเสริฐ", "วิมล", "ขับรถ 6 ล้อ", "088-615-5618"], ["วัทน์สิริ", "ขัตติยะ", "ดอม", "ขับรถ 10 ล้อ", "093-156-6923"], ["ณรงค์พันธ์", "สมควร", "วิค", "ผู้ช่วยเซอร์เวย์", "081-663-4874"], ["พัฒนะ", "โพนไสว", "อ้น", "ขับรถเทรลเลอร์", "083-319-0334"], ["คมสัน", "กิตติยะ", "เจ", "ขับรถแม็คโคร", ""], ["วิมล", "สิงสาร", "หมวด", "ขับรถ 10 ล้อ", "095-383-3132"], ["มนูญ", "สิงสาร", "แม็ก", "ขับรถแม็คโคร", "096-016-2669"]];
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const KEY='checkin-v1';
+const KEY='checkin-v2';
 let db;
 try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){}
-if(!db||!db.workers)db={workers:SEED.map((x,i)=>({id:'w'+(i+1),first:x[0],last:'',nick:x[1],phone:'',active:true})),att:{}};
+if(!db||!db.workers)db={workers:SEED.map((x,i)=>({id:'w'+(i+1),first:x[0],last:x[1],nick:x[2],pos:x[3],phone:x[4],active:true})),att:{}};
 const persist=()=>localStorage.setItem(KEY,JSON.stringify(db));
 const pad=n=>String(n).padStart(2,'0');
 const fmt=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
@@ -40,7 +40,7 @@ function drawCheck(){
   $$('#strip button').forEach(b=>b.onclick=()=>setDate(b.dataset.d));
   const ws=db.workers.filter(w=>w.active);
   $('#list').innerHTML=ws.map(w=>{const r=draft[w.id]||{};return`<div class="row ${r.s?'st-'+r.s:''}" data-id="${w.id}">
-   <div class="who"><b>${esc(w.nick)}</b><small>${esc(full(w))}</small></div>
+   <div class="av">${esc([...w.nick][0]||"?")}</div><div class="who"><b>${esc(w.nick)}</b><small>${esc(full(w))}${w.pos?' · '+esc(w.pos):''}</small></div>
    ${w.phone?`<a class="call" href="tel:${esc(w.phone.replace(/[^\d+]/g,''))}">📞 ${esc(w.phone)}</a>`:'<span class="call none">ไม่มีเบอร์</span>'}
    <div class="chips">${Object.entries(S).map(([k,v])=>`<button data-s="${k}" class="${r.s===k?'on':''}">${v[0]}</button>`).join('')}</div>
    <input class="note" placeholder="หมายเหตุ" value="${esc(r.n||'')}"></div>`}).join('')||'<p>ยังไม่มีรายชื่อ ไปที่แท็บ “รายชื่อ”</p>';
@@ -69,7 +69,7 @@ function admin(){if(unlocked)return true;const c=prompt('ใส่รหัส�
 $$('.tabs button[data-a]').forEach(b=>b.onclick=()=>{tabActive=b.dataset.a==='1';$$('.tabs button[data-a]').forEach(x=>x.classList.toggle('on',x===b));drawWorkers()});
 function drawWorkers(){
   $('#wlist').innerHTML=db.workers.filter(w=>w.active===tabActive).map(w=>`<div class="w" data-id="${w.id}">
-   <div class="who"><b>${esc(w.nick)}</b><small> ${esc(full(w))}</small><br><small>${esc(w.phone||'-')}</small></div>
+   <div class="av">${esc([...w.nick][0]||"?")}</div><div class="who"><b>${esc(w.nick)}</b><small> ${esc(full(w))}${w.pos?' · '+esc(w.pos):''}</small><br><small>${esc(w.phone||'-')}</small></div>
    ${tabActive?`<button class="btn" data-x="edit">✏️ แก้ไข</button><button class="btn" data-x="del">🗑 ลบ</button>`:`<button class="btn" data-x="res">↩️ กู้คืน</button>`}</div>`).join('')||'<p>ไม่มีรายการ</p>';
 }
 $('#add').onclick=()=>{if(!admin())return;openDlg(null)};
@@ -82,11 +82,11 @@ $('#wlist').onclick=e=>{
 };
 function openDlg(w){
   editId=w?w.id:null;$('#dt').textContent=w?'แก้ไขข้อมูลคนงาน':'เพิ่มคนงานใหม่';
-  const f=$('#frm');['first','last','nick','phone'].forEach(k=>f[k].value=w?w[k]||'':'');$('#dlg').showModal();
+  const f=$('#frm');['first','last','nick','pos','phone'].forEach(k=>f[k].value=w?w[k]||'':'');$('#dlg').showModal();
 }
 $('#cancel').onclick=()=>$('#dlg').close();
 $('#frm').onsubmit=()=>{
-  const f=$('#frm'),v={first:f.first.value.trim(),last:f.last.value.trim(),nick:f.nick.value.trim(),phone:f.phone.value.trim()};
+  const f=$('#frm'),v={first:f.first.value.trim(),last:f.last.value.trim(),nick:f.nick.value.trim(),pos:f.pos.value.trim(),phone:f.phone.value.trim()};
   if(editId)Object.assign(db.workers.find(x=>x.id===editId),v);
   else db.workers.push({id:'w'+Date.now(),active:true,...v});
   persist();drawWorkers();
