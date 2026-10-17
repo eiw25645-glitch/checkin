@@ -141,6 +141,38 @@
   drawCheck=function(){dc();run1()};
   $('#q1').addEventListener('input',run1);
   $('#q2').addEventListener('input',run2);
+
+  /* 4) ซิงค์ข้อมูลกลางแบบเรียลไทม์ (/api/db) */
+  const API='/api/db',rawSet=Storage.prototype.setItem;
+  let rev=0,timer=null,pending=false;
+  // แอดมินบันทึกเมื่อไร (persist เขียน localStorage) ส่งขึ้นเซิร์ฟเวอร์ด้วย
+  Storage.prototype.setItem=function(k,v){
+    rawSet.call(this,k,v);
+    if(k!==KEY||!unlocked)return;
+    pending=true;clearTimeout(timer);
+    timer=setTimeout(async()=>{
+      try{
+        const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:ADMIN_CODE,db})});
+        const j=await r.json();if(!j.rev)throw 0;rev=j.rev;
+      }catch(e){alert('บันทึกขึ้นเซิร์ฟเวอร์ไม่สำเร็จ ลองกดบันทึกอีกครั้ง')}
+      pending=false;
+    },400);
+  };
+  // ทุกคนดึงข้อมูลล่าสุดทุก 5 วินาที
+  async function pull(){
+    if(pending||(dirty&&unlocked)||$('#dlg').open)return;
+    const a=document.activeElement;if(a&&a.classList&&a.classList.contains('note'))return;
+    try{
+      const j=await (await fetch(API,{cache:'no-store'})).json();
+      if(!j.db||j.rev===rev||pending)return;
+      rev=j.rev;db=j.db;
+      rawSet.call(localStorage,KEY,JSON.stringify(db));
+      load();
+      ({check:drawCheck,workers:drawWorkers,report:drawReport})[document.querySelector('.page.on').id]();
+    }catch(e){}
+  }
+  pull();setInterval(pull,5000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
 })();
 </script>
 </body>
