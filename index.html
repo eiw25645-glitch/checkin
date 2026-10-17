@@ -6,7 +6,23 @@
 <title>เช็คชื่อคนงาน</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="search.css">
+<style>
+.hint{color:var(--mut);font-size:14px;margin:-8px 0 14px}
+.addcard{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--pur);border:1.2px solid var(--ink);border-radius:28px;padding:18px 20px;box-shadow:0 5px 0 var(--ink);cursor:pointer;margin-bottom:18px}
+.addcard b{font-size:20px}
+.addcard small{display:block;color:#4a4670;font-size:14px}
+.addcard i{font-style:normal;flex:none;width:44px;height:44px;border-radius:50%;background:var(--yel);border:1.2px solid var(--ink);display:grid;place-items:center;font-weight:700;font-size:20px}
+.addcard:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
+.tabs button[data-a].on{background:var(--yel);color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.w{border-radius:22px;padding:14px 16px;margin-bottom:12px}
+.w .who b{font-size:20px}
+.w .btn{padding:8px 16px;font-size:16px;font-weight:400}
+.ph{display:inline-block;margin-top:6px;background:var(--mint);border:1.2px solid var(--ink);border-radius:99px;padding:3px 12px;font-weight:700;font-size:15px;color:var(--ink);text-decoration:none}
+.search{position:relative;margin-bottom:12px}
+.search input{width:100%;padding-left:42px;border-radius:99px}
+.search::before{content:"🔍";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:17px;pointer-events:none}
+.found{min-height:18px;margin:-6px 4px 10px;font-size:14px;color:var(--mut);font-weight:700}
+</style>
 </head>
 <body>
 <nav id="nav">
@@ -77,6 +93,55 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="app.js"></script>
-<script src="search.js"></script>
+<script>
+/* ===== ส่วนเสริม (ใช้ได้กับ app.js เดิม ไม่ต้องแก้ app.js) ===== */
+(()=>{
+  /* 1) เฉพาะแอดมินเช็คชื่อได้ */
+  const gate=(el,test)=>el.addEventListener('click',e=>{
+    if(test&&!test(e))return;
+    if(!admin()){e.stopImmediatePropagation();e.preventDefault()}
+  },true);
+  gate($('#allcome'));
+  gate($('#save'));
+  gate($('#list'),e=>e.target.closest('.chips button'));
+  $('#list').addEventListener('focusin',e=>{
+    if(!e.target.classList.contains('note')||unlocked)return;
+    const t=e.target;t.blur();if(admin())t.focus();
+  });
+  commit=function(){if(!dirty||!unlocked)return;db.att[date]=draft;persist();dirty=false};
+
+  /* 2) กดเบอร์โทรออกได้ทุกหน้า */
+  const tel=p=>p?`<a class="ph" href="tel:${esc(p.replace(/[^\d+]/g,''))}">📞 ${esc(p)}</a>`:'';
+  drawWorkers=function(){
+    $('.tabs button[data-a="1"]').textContent='ทำงานอยู่ ('+db.workers.filter(w=>w.active).length+')';
+    $('#wlist').innerHTML=db.workers.filter(w=>w.active===tabActive).map(w=>`<div class="w" data-id="${w.id}">
+     <div class="who"><b>${esc(w.nick)}</b><small>${esc(full(w))}${w.pos?' · '+esc(w.pos):''}</small>${tel(w.phone)}</div>
+     ${tabActive?`<button class="btn" data-x="edit">แก้ไข</button><button class="btn" data-x="del">ลบ</button>`:`<button class="btn" data-x="res">กู้คืน</button>`}</div>`).join('')||'<p>ไม่มีรายการ</p>';
+    run2();
+  };
+  const dr=drawReport;
+  drawReport=function(){
+    dr();
+    const p=$('#area p');
+    if(p)p.innerHTML=p.innerHTML.replace(/โทร\s+([\d\-+]+)/,(m,n)=>tel(n));
+  };
+  $('#month').onchange=$('#sym').onchange=$('#person').onchange=drawReport;
+
+  /* 3) ค้นหารายชื่อ */
+  const norm=s=>String(s||'').toLowerCase().replace(/[\s\-]/g,'');
+  const hay=id=>{const w=db.workers.find(x=>x.id===id);return w?norm([w.nick,w.first,w.last,w.pos,w.phone].join('')):''};
+  function run(box,rowSel,cnt){
+    const q=norm($(box).value);let n=0,t=0;
+    $$(rowSel).forEach(el=>{t++;const ok=!q||hay(el.dataset.id).includes(q);el.style.display=ok?'':'none';if(ok)n++});
+    $(cnt).textContent=q?(n?`พบ ${n} จาก ${t} คน`:'ไม่พบรายชื่อที่ค้นหา'):'';
+  }
+  const run1=()=>run('#q1','#list .row','#c1');
+  const run2=()=>run('#q2','#wlist .w','#c2');
+  const dc=drawCheck;
+  drawCheck=function(){dc();run1()};
+  $('#q1').addEventListener('input',run1);
+  $('#q2').addEventListener('input',run2);
+})();
+</script>
 </body>
 </html>
