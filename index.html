@@ -59,17 +59,21 @@
 .sum span{cursor:pointer;user-select:none}
 .sum span.on{box-shadow:0 0 0 3px var(--ink)}
 /* ตารางรายงาน: ลงสีเฉพาะ ลา สาย ขาด ครึ่งวัน หยุด (มา ไม่ลงสี) */
-.t .c-come{background:#fff}
-.sw.c-come{background:#fff}
-/* ตารางรวมบนมือถือ: เต็มความกว้าง ไม่ต้องเลื่อน */
-@media screen and (max-width:799px){
- #report #area{margin:0 -14px;border-radius:0;border-width:1.2px 0;padding:6px 1px}
- #report #area h3,#report #area p,#report #area .lg{padding:0 13px}
- .t.wide{font-size:7px}
- .t.wide th,.t.wide td{padding:2px 0;min-width:0}
- .t.wide td.l,.t.wide th.l{padding:2px 2px;font-size:8px}
- .t.wide th.wd{font-size:5.5px}
-}
+.t.allv .c-come{background:#fff}
+/* รายบุคคล: แบบใบตอกบัตรเข้างาน */
+.tc{border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:#fffef6}
+.tc-h{display:flex;justify-content:space-between;gap:8px;background:var(--ink);color:#fff;padding:9px 12px;font-weight:700}
+.tc-who{padding:8px 12px;border-bottom:2px dashed var(--ink);line-height:1.5}
+.tc-who b{font-size:20px}
+.t.tc-tb{font-size:14px}
+.t.tc-tb th{background:#3a3a46}
+.t.tc-tb td{padding:3px 6px;border:0;border-bottom:1px dotted #777}
+.t.tc-tb tr.we td{background:#ececf2}
+.t.tc-tb td.c-come{background:#a8f0c2}
+.tc-sum{display:flex;flex-wrap:wrap;gap:6px;padding:9px 12px;border-top:2px solid var(--ink)}
+.tc-sum .sw{border-radius:99px;padding:3px 11px;font-size:14px}
+.tc-sig{display:flex;justify-content:space-around;gap:16px;padding:22px 12px 10px;border-top:1px dashed var(--ink)}
+.tc-sig span{flex:1;border-top:1px solid var(--ink);text-align:center;padding-top:4px;font-size:13px}
 .found{min-height:18px;margin:-6px 4px 10px;font-size:14px;color:var(--mut);font-weight:700}
 </style>
 </head>
@@ -176,15 +180,26 @@
     const p=$('#area p');
     if(p)p.innerHTML=p.innerHTML.replace(/โทร\s+([\d\-+]+)/,(m,n)=>tel(n));
     const t=$('#tbl');
-    if(t&&view==='all'){
-      t.classList.add('wide');
-      // หัวคอลัมน์สรุปใช้ตัวย่อ ให้ตารางแคบลง
-      $$('#tbl tr:first-child th[rowspan="2"]').forEach(th=>{
-        const k=Object.keys(S).find(k=>S[k][0]===th.textContent);
-        if(k)th.textContent=S[k][1];
-      });
-    }
+    if(t&&view==='all')t.classList.add('allv');   // ตารางรวม: "มา" ไม่ลงสี
+    if(view==='one')timecard();
   };
+  /* รายบุคคล แบบใบตอกบัตรเข้างาน */
+  function timecard(){
+    const w=db.workers.find(x=>x.id===$('#person').value);if(!w)return;
+    const m=$('#month').value||date.slice(0,7),[y,mo]=m.split('-').map(Number),nd=new Date(y,mo,0).getDate(),n={};
+    let rows='';
+    for(let d=1;d<=nd;d++){
+      const k=m+'-'+pad(d),wd=new Date(y,mo-1,d).getDay(),r=(db.att[k]||{})[w.id]||{};
+      if(r.s)n[r.s]=(n[r.s]||0)+1;
+      rows+=`<tr class="${wd%6?'':'we'}"><td class="l">${thDate(k)}</td><td>${WD[wd]}</td>${r.s?`<td class="c-${r.s}">${S[r.s][0]}</td>`:'<td></td>'}<td class="l">${esc(r.n||'')}</td></tr>`;
+    }
+    $('#area').innerHTML=`<div class="tc">
+      <div class="tc-h"><span>บัตรบันทึกเวลาทำงาน</span><span>เดือน ${mo}/${y+543}</span></div>
+      <div class="tc-who"><b>${esc(w.nick)}</b> ${esc(full(w))}${w.pos?' · '+esc(w.pos):''}${w.phone?'<br>'+tel(w.phone):''}</div>
+      <table class="t tc-tb" id="tbl"><tr><th class="l">วันที่</th><th>วัน</th><th>สถานะ</th><th class="l">หมายเหตุ</th></tr>${rows}</table>
+      <div class="tc-sum">${Object.entries(S).map(([k,v])=>`<span class="sw c-${k}">${v[0]} <b>${n[k]||0}</b></span>`).join('')}</div>
+      <div class="tc-sig"><span>ลงชื่อพนักงาน</span><span>ผู้ตรวจสอบ</span></div></div>`;
+  }
   $('#month').onchange=$('#sym').onchange=$('#person').onchange=drawReport;
 
   /* 3) ค้นหารายชื่อ */
