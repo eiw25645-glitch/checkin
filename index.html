@@ -21,6 +21,8 @@
 .search{position:relative;margin-bottom:12px}
 .search input{width:100%;padding-left:42px;border-radius:99px}
 .search::before{content:"🔍";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:17px;pointer-events:none}
+.sum span{cursor:pointer;user-select:none}
+.sum span.on{box-shadow:0 0 0 3px var(--ink)}
 .found{min-height:18px;margin:-6px 4px 10px;font-size:14px;color:var(--mut);font-weight:700}
 </style>
 </head>
@@ -130,10 +132,22 @@
   /* 3) ค้นหารายชื่อ */
   const norm=s=>String(s||'').toLowerCase().replace(/[\s\-]/g,'');
   const hay=id=>{const w=db.workers.find(x=>x.id===id);return w?norm([w.nick,w.first,w.last,w.pos,w.phone].join('')):''};
+  /* กรองตามสถานะ: กดที่ป้ายสรุป (มา/ลา/สาย/ขาด/ครึ่งวัน/หยุด/ยังไม่เช็ค) */
+  let filt=null;
+  const keys=[...Object.keys(S),'none'];
+  const fit=id=>{if(!filt)return true;const s=(draft[id]||{}).s||'';return filt==='none'?!s:s===filt};
+  const paint=()=>[...$('#sum').children].forEach((x,i)=>x.classList.toggle('on',keys[i]===filt));
+  const ds=drawSum;
+  drawSum=function(){ds();paint()};
+  $('#sum').addEventListener('click',e=>{
+    const s=e.target.closest('span');if(!s)return;
+    const k=keys[[...$('#sum').children].indexOf(s)];
+    filt=filt===k?null:k;paint();run1();
+  });
   function run(box,rowSel,cnt){
-    const q=norm($(box).value);let n=0,t=0;
-    $$(rowSel).forEach(el=>{t++;const ok=!q||hay(el.dataset.id).includes(q);el.style.display=ok?'':'none';if(ok)n++});
-    $(cnt).textContent=q?(n?`พบ ${n} จาก ${t} คน`:'ไม่พบรายชื่อที่ค้นหา'):'';
+    const q=norm($(box).value),f=box==='#q1'&&filt;let n=0,t=0;
+    $$(rowSel).forEach(el=>{t++;const ok=(!q||hay(el.dataset.id).includes(q))&&(box!=='#q1'||fit(el.dataset.id));el.style.display=ok?'':'none';if(ok)n++});
+    $(cnt).textContent=(q||f)?(n?`พบ ${n} จาก ${t} คน`:'ไม่พบรายชื่อ'):'';
   }
   const run1=()=>run('#q1','#list .row','#c1');
   const run2=()=>run('#q2','#wlist .w','#c2');
