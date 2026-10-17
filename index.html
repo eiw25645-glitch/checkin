@@ -40,8 +40,19 @@
  nav button{padding:4px 2px;border-radius:12px}
  nav button i{font-size:17px;line-height:1.2}
  nav button span{font-size:11px;line-height:1.2}
- main{padding-bottom:84px!important}
- .savebar{bottom:62px}
+ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}
+ .savebar{bottom:calc(54px + env(safe-area-inset-bottom))}
+}
+/* ย่อการ์ดรายชื่อให้เห็นหลายคนต่อหน้าจอ (มือถือ) */
+@media(max-width:799px){
+ .row{padding:8px 10px;margin-bottom:7px;gap:6px 8px;border-radius:16px;grid-template-columns:30px 1fr auto}
+ .row .av{width:30px;height:30px;border-radius:9px;font-size:14px}
+ .row .who b{font-size:16px}
+ .row .who small{font-size:12px;line-height:1.2}
+ .row .call{padding:4px 9px;font-size:13px;border-radius:10px}
+ .row .chips button{padding:6px 0;font-size:14px;border-radius:10px}
+ .row .note{padding:6px 10px;font-size:14px;border-radius:10px}
+ .row[class*="st-"]{grid-template-columns:30px 54px 1fr auto;grid-template-areas:"av who who call" "chips chips note note"}
 }
 .sum span{cursor:pointer;user-select:none}
 .sum span.on{box-shadow:0 0 0 3px var(--ink)}
