@@ -60,6 +60,8 @@
 .sum span.on{box-shadow:0 0 0 3px var(--ink)}
 /* ตารางรายงาน: ลงสีเฉพาะ ลา สาย ขาด ครึ่งวัน หยุด (มา ไม่ลงสี) */
 .t.allv .c-come{background:#fff}
+.pick{display:grid;gap:8px}
+.pick .btn{padding:12px 14px;font-size:16px;text-align:left}
 /* รายบุคคล: แบบใบตอกบัตรเข้างาน */
 .tc{border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:#fffef6}
 .tc-h{display:flex;justify-content:space-between;gap:8px;background:var(--ink);color:#fff;padding:9px 12px;font-weight:700}
@@ -67,7 +69,8 @@
 .tc-who b{font-size:20px}
 .t.tc-tb{font-size:14px}
 .t.tc-tb th{background:#3a3a46}
-.t.tc-tb td{padding:3px 6px;border:0;border-bottom:1px dotted #777}
+.t.tc-tb th,.t.tc-tb td{border:1px solid #999}
+.t.tc-tb td{padding:3px 6px}
 .t.tc-tb tr.we td{background:#ececf2}
 .t.tc-tb td.c-come{background:#a8f0c2}
 .tc-sum{display:flex;flex-wrap:wrap;gap:6px;padding:9px 12px;border-top:2px solid var(--ink)}
@@ -125,6 +128,7 @@
     <div class="exports">
       <button class="btn ghost" id="bPrint">🖨 พิมพ์</button>
       <button class="btn ghost" id="bPdf">📄 โหลด PDF</button>
+      <button class="btn ghost" id="bSave" style="display:none">💾 บันทึกบัตร</button>
       <button class="btn ghost" id="bXls">📗 Excel</button>
       <button class="btn ghost" id="bImg">🖼 รูปภาพ</button>
     </div>
@@ -142,6 +146,17 @@
     <label>เบอร์โทรศัพท์<input name="phone" type="tel" inputmode="tel" placeholder="0812345678"></label>
     <div class="acts"><button type="button" class="btn ghost" id="cancel">ยกเลิก</button><button class="btn red">บันทึก</button></div>
   </form>
+</dialog>
+
+<dialog id="dsave">
+  <h2>บันทึกบัตรเป็น</h2>
+  <div class="pick">
+    <button class="btn" data-k="bImg">🖼 รูปภาพ (PNG)</button>
+    <button class="btn" data-k="bPdf">📄 ไฟล์ PDF</button>
+    <button class="btn" data-k="bXls">📗 ไฟล์ Excel</button>
+    <button class="btn" data-k="bPrint">🖨 พิมพ์</button>
+    <button class="btn ghost">ปิด</button>
+  </div>
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -182,6 +197,9 @@
     const t=$('#tbl');
     if(t&&view==='all')t.classList.add('allv');   // ตารางรวม: "มา" ไม่ลงสี
     if(view==='one')timecard();
+    // รายบุคคล: รวมปุ่มส่งออกเป็นปุ่มเดียวให้เลือกรูปแบบ
+    ['bPrint','bPdf','bXls','bImg'].forEach(i=>$('#'+i).style.display=view==='one'?'none':'');
+    $('#bSave').style.display=view==='one'?'':'none';
   };
   /* รายบุคคล แบบใบตอกบัตรเข้างาน */
   function timecard(){
@@ -261,18 +279,21 @@
   pull();setInterval(pull,5000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
 
-  /* 5) ปุ่มโหลด PDF (แยกจากปุ่มพิมพ์) */
+  /* 5) ปุ่มโหลด PDF / รูปภาพ / บันทึกบัตร */
+  async function snap(w){   // ถ่ายตารางที่ความกว้างเต็ม ให้คมชัดแม้ดูในมือถือ
+    const box=document.createElement('div');
+    box.style.cssText='position:fixed;left:-99999px;top:0;background:#fff;padding:12px;width:'+w+'px';
+    const cl=$('#area').cloneNode(true);
+    cl.removeAttribute('id');cl.style.cssText='border:0;border-radius:0;padding:0;margin:0;overflow:visible';
+    box.appendChild(cl);document.body.appendChild(box);
+    try{return await html2canvas(box,{scale:2,backgroundColor:'#fff'})}finally{box.remove()}
+  }
+  const fname=()=>{const w=db.workers.find(x=>x.id===$('#person').value);return (view==='one'&&w?'บัตร_'+w.nick:'เช็คชื่อ')+'_'+$('#month').value};
   $('#bPdf').onclick=async()=>{
     if(!window.html2canvas||!window.jspdf)return alert('โหลดตัวสร้าง PDF ไม่ได้ (ต้องต่อเน็ต)');
     const b=$('#bPdf'),old=b.textContent;b.textContent='⏳ กำลังสร้าง...';
     try{
-      const land=view==='all',box=document.createElement('div');
-      box.style.cssText='position:fixed;left:-99999px;top:0;background:#fff;padding:12px;width:'+(land?1400:720)+'px';
-      const cl=$('#area').cloneNode(true);
-      cl.removeAttribute('id');cl.style.cssText='border:0;border-radius:0;padding:0;margin:0;overflow:visible';
-      box.appendChild(cl);document.body.appendChild(box);
-      const c=await html2canvas(box,{scale:2,backgroundColor:'#fff'});
-      box.remove();
+      const land=view==='all',c=await snap(land?1400:720);
       const pdf=new window.jspdf.jsPDF({orientation:land?'l':'p',unit:'mm',format:'a4'});
       const W=pdf.internal.pageSize.getWidth()-10,H=pdf.internal.pageSize.getHeight()-10;
       const sh=Math.floor(H*c.width/W);          // ความสูง (px) ที่ใส่ได้ต่อหน้า
@@ -283,9 +304,22 @@
         if(pg)pdf.addPage();
         pdf.addImage(s.toDataURL('image/jpeg',.95),'JPEG',5,5,W,h*W/c.width);
       }
-      pdf.save('เช็คชื่อ_'+$('#month').value+'.pdf');
+      pdf.save(fname()+'.pdf');
     }catch(e){alert('สร้าง PDF ไม่สำเร็จ')}
     b.textContent=old;
+  };
+  $('#bImg').onclick=async()=>{
+    if(!window.html2canvas)return alert('โหลดตัวสร้างรูปไม่ได้ (ต้องต่อเน็ต)');
+    try{
+      const c=await snap(view==='all'?1400:720);
+      const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=fname()+'.png';a.click();
+    }catch(e){alert('สร้างรูปไม่สำเร็จ')}
+  };
+  $('#bSave').onclick=()=>$('#dsave').showModal();
+  $('#dsave').onclick=e=>{
+    const b=e.target.closest('button');if(!b)return;
+    $('#dsave').close();
+    if(b.dataset.k)setTimeout(()=>$('#'+b.dataset.k).click(),50);
   };
 })();
 </script>
