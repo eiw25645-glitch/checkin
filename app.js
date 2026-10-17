@@ -50,9 +50,11 @@ function drawCheck(){
   drawSum();
 }
 function drawSum(){
-  const n={};Object.values(draft).forEach(r=>r.s&&(n[r.s]=(n[r.s]||0)+1));
-  $('#sum').innerHTML=Object.entries(S).map(([k,v])=>`<span>${v[0]} ${n[k]||0}</span>`).join('');
+  const ws=db.workers.filter(w=>w.active),n={};let u=0;
+  ws.forEach(w=>{const s=(draft[w.id]||{}).s;if(s)n[s]=(n[s]||0)+1;else u++});
+  $('#sum').innerHTML=Object.entries(S).map(([k,v])=>`<span>${v[0]} ${n[k]||0}</span>`).join('')+`<span>ยังไม่เช็ค ${u}</span>`;
 }
+$('#allcome').onclick=()=>{db.workers.filter(w=>w.active).forEach(w=>{const r=draft[w.id]=draft[w.id]||{};if(!r.s)r.s='come'});dirty=true;drawCheck()};
 $('#list').addEventListener('click',e=>{
   const b=e.target.closest('.chips button');if(!b)return;
   const row=b.closest('.row'),id=row.dataset.id,r=draft[id]=draft[id]||{};
@@ -99,8 +101,9 @@ $('#frm').onsubmit=()=>{
 let view='all';
 $('#month').value=date.slice(0,7);
 $$('.tabs button[data-v]').forEach(b=>b.onclick=()=>{view=b.dataset.v;$$('.tabs button[data-v]').forEach(x=>x.classList.toggle('on',x===b));drawReport()});
-$('#month').onchange=drawReport;$('#person').onchange=drawReport;
-const cell=r=>r&&r.s?`<td class="c-${r.s}">${S[r.s][1]}</td>`:'<td></td>';
+$('#month').onchange=drawReport;$('#sym').onchange=drawReport;$('#person').onchange=drawReport;
+const mark=k=>k==='come'?$('#sym').value:S[k][1];
+const cell=r=>r&&r.s?`<td class="c-${r.s}">${mark(r.s)}</td>`:'<td></td>';
 function drawReport(){
   const m=$('#month').value||date.slice(0,7),[y,mo]=m.split('-').map(Number),nd=new Date(y,mo,0).getDate();
   const title=`สรุปการมาทำงาน เดือน ${mo}/${y+543}`;
@@ -126,7 +129,7 @@ function drawReport(){
       <table class="t" id="tbl"><tr><th class="l">วันที่</th><th>วัน</th><th>สถานะ</th><th class="l">หมายเหตุ</th></tr>
       ${days.map(d=>{const r=(db.att[d.k]||{})[w.id]||{};return`<tr class="${d.w%6?'':'we'}"><td class="l">${thDate(d.k)}</td><td>${WD[d.w]}</td>${r.s?`<td class="c-${r.s}">${S[r.s][0]}</td>`:'<td></td>'}<td class="l">${esc(r.n||'')}</td></tr>`}).join('')}</table>`}
   }
-  html+=`<div class="lg">${Object.entries(S).map(([k,v])=>`<span class="sw c-${k}">${v[1]}</span> ${v[0]}`).join(' &nbsp; ')}</div>`;
+  html+=`<div class="lg">${Object.entries(S).map(([k,v])=>`<span class="sw c-${k}">${mark(k)}</span> ${v[0]}`).join(' &nbsp; ')}</div>`;
   $('#area').innerHTML=html;$('#area').dataset.title=title+(view==='one'?' '+(all.find(x=>x.id===sel.value)||{}).nick:'');
 }
 $('#bPrint').onclick=()=>window.print();
