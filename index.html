@@ -6,6 +6,7 @@
 <title>เช็คชื่อคนงาน</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="search.css">
 </head>
 <body>
 <nav id="nav">
@@ -26,13 +27,20 @@
     </div>
     <div class="sum" id="sum"></div>
     <button class="dash" id="allcome">ตั้งคนที่ยังไม่เช็คเป็น “มา” ทั้งหมด</button>
+    <div class="search"><input type="search" id="q1" placeholder="ค้นหา ชื่อ / ชื่อเล่น / ตำแหน่ง / เบอร์โทร"></div>
+    <div class="found" id="c1"></div>
     <div id="list"></div>
     <div class="savebar"><button class="btn red big" id="save">💾 บันทึกข้อมูล</button></div>
   </section>
 
   <section id="workers" class="page">
     <h1>จัดการรายชื่อคนงาน</h1>
-    <button class="btn yellow big" id="add">＋ เพิ่มคนงานใหม่</button>
+    <p class="hint">🔒 ต้องใช้รหัสแอดมินจึงแก้ไขได้</p>
+    <button class="addcard" id="add">
+      <span><b>＋ เพิ่มคนงานใหม่</b><small>ชื่อ-นามสกุล ชื่อเล่น เบอร์โทร</small></span><i>→</i>
+    </button>
+    <div class="search"><input type="search" id="q2" placeholder="ค้นหา ชื่อ / ชื่อเล่น / ตำแหน่ง / เบอร์โทร"></div>
+    <div class="found" id="c2"></div>
     <div class="tabs"><button class="on" data-a="1">ทำงานอยู่</button><button data-a="0">ออกแล้ว</button></div>
     <div id="wlist"></div>
   </section>
@@ -69,5 +77,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="app.js"></script>
+<script src="search.js"></script>
 </body>
 </html>
