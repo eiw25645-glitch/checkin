@@ -21,6 +21,19 @@
 .search{position:relative;margin-bottom:12px}
 .search input{width:100%;padding-left:42px;border-radius:99px}
 .search::before{content:"🔍";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:17px;pointer-events:none}
+.row[class*="st-"] .chips button:not(.on){display:none}
+/* ย่อส่วนหัวหน้าเช็คชื่อ และปุ่มบันทึก */
+#check h1{font-size:20px;margin:0 0 8px}
+#check .strip{padding:4px;margin-bottom:8px;border-radius:16px}
+#check .strip button{padding:3px 0;font-size:11px;border-radius:10px}
+#check .strip button b{font-size:16px}
+#check .datebar{gap:6px;margin-bottom:8px}
+#check .datebar .btn,#check .datebar input{padding:5px 10px;font-size:14px;border-radius:10px}
+#check .sum{gap:5px;margin-bottom:8px}
+#check .sum span{padding:2px 9px;font-size:12px}
+#check .dash{padding:6px;font-size:13px;margin-bottom:8px;border-radius:12px}
+#check .search input{padding-top:7px;padding-bottom:7px;font-size:14px}
+.savebar .btn.big{padding:7px;font-size:14px;border-radius:12px}
 .sum span{cursor:pointer;user-select:none}
 .sum span.on{box-shadow:0 0 0 3px var(--ink)}
 .found{min-height:18px;margin:-6px 4px 10px;font-size:14px;color:var(--mut);font-weight:700}
