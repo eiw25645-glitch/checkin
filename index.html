@@ -78,6 +78,41 @@
 .tc-sig{display:flex;justify-content:space-around;gap:16px;padding:22px 12px 10px;border-top:1px dashed var(--ink)}
 .tc-sig span{flex:1;border-top:1px solid var(--ink);text-align:center;padding-top:4px;font-size:13px}
 .found{min-height:18px;margin:-6px 4px 10px;font-size:14px;color:var(--mut);font-weight:700}
+
+/* ===== โทนสีสบายตา: ลดสี ขอบเทาบาง ไม่มีเงาหนา ===== */
+:root{--line:#dcdce3}
+.row,.row[class*="st-"],.card,.w,.addcard,.strip,.dash,.datebar .btn,.datebar input,.search input,.note,.ph,.row .call,.sum span,.tabs button,.tc-sum .sw{border:1px solid var(--line)!important;box-shadow:none!important}
+.row,.row[class*="st-"],.w,.card,.strip{background:#fff!important}
+.row .av{background:#f1f1f5!important;border:1px solid var(--line)!important}
+/* สีเฉพาะปุ่มสถานะ และลดความจัดของสีลง */
+.row .chips button{border:1px solid var(--line)!important;box-shadow:none!important;font-weight:500}
+.row .chips button.on,.sum span,.tc-sum .sw{filter:saturate(.55) brightness(1.04)}
+.row .call,.ph{background:#f1f5f4!important;color:#2f3b38!important;font-weight:500}
+.row .who b{color:var(--ink)!important}
+/* การ์ดเพิ่มคนงาน / ปุ่มบันทึก / แท็บ */
+.addcard{background:#fff!important}
+.addcard i{background:#f1f1f5!important;border:1px solid var(--line)!important}
+.addcard small{color:var(--mut)}
+.tabs button[data-a].on{background:#ececf2!important;box-shadow:none!important}
+.sum span.on{box-shadow:0 0 0 2px #9a9aa8!important}
+.savebar .btn.big{background:#4a5060!important;color:#fff!important;border:1px solid #4a5060!important;box-shadow:none!important}
+nav,nav button{box-shadow:none!important}
+nav{border-color:var(--line)!important}
+nav button.on{background:#ececf2!important;border:1px solid var(--line)!important}
+/* รายบุคคล: ขนาดเท่าบัตรตอก (คอม) */
+.tc{border:1px solid #bdbdc8;border-radius:10px}
+.tc-h{background:#4a5060}
+.tc-who{border-bottom:1px dashed #bdbdc8}
+.tc-sum,.tc-sig{border-top:1px solid var(--line)}
+.t.tc-tb th{background:#6b7080}
+.t.tc-tb th,.t.tc-tb td{border:1px solid #e0e0e6}
+.t.tc-tb td.c-come{background:#dff3e6}
+@media(min-width:800px){
+ #area:has(.tc){max-width:420px;margin:0 auto;padding:10px}
+ #area:has(.tc) .tc-tb{font-size:13px}
+ #area:has(.tc) .tc-tb td{padding:2px 6px}
+ .exports:has(#bSave:not([style*="none"])){max-width:420px;margin-left:auto;margin-right:auto}
+}
 </style>
 </head>
 <body>
