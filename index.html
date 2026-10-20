@@ -22,7 +22,7 @@
 .ph{display:inline-block;margin-top:6px;background:var(--mint);border:1.2px solid var(--ink);border-radius:99px;padding:3px 12px;font-weight:700;font-size:15px;color:var(--ink);text-decoration:none}
 .search{position:relative;margin-bottom:12px}
 .search input{width:100%;padding-left:42px;border-radius:99px}
-.search::before{content:"🔍";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:17px;pointer-events:none}
+.search::before{content:"";position:absolute;left:15px;top:50%;width:18px;height:18px;transform:translateY(-50%);pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a98' stroke-width='1.9' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6'/%3E%3Cpath d='M15.2 15.2L20 20'/%3E%3C/svg%3E") center/contain no-repeat}
 .row[class*="st-"] .chips button:not(.on){display:none}
 /* ย่อส่วนหัวหน้าเช็คชื่อ และปุ่มบันทึก */
 #check h1{font-size:23px;margin:2px 0 10px}
@@ -71,7 +71,6 @@
 .t.tc-tb th{background:#3a3a46}
 .t.tc-tb th,.t.tc-tb td{border:1px solid #999}
 .t.tc-tb td{padding:3px 6px}
-.t.tc-tb tr.we td{background:#ececf2}
 .t.tc-tb td.c-come{background:#a8f0c2}
 .tc-sum{display:flex;flex-wrap:wrap;gap:6px;padding:9px 12px;border-top:2px solid var(--ink)}
 .tc-sum .sw{border-radius:99px;padding:3px 11px;font-size:14px}
@@ -106,22 +105,45 @@ nav button.on{background:#ececf2!important;border:1px solid var(--line)!importan
 .tc-sum,.tc-sig{border-top:1px solid var(--line)}
 .t.tc-tb th{background:#6b7080}
 .t.tc-tb th,.t.tc-tb td{border:1px solid #e0e0e6}
-.t.tc-tb td.c-come{background:#dff3e6}
+.t.tc-tb td.c-come{background:none!important;font-weight:700}
+.t.tc-tb tr.we td:not([class^="c-"]),.t.tc-tb tr.we td.c-come{background:#ececf2}
 @media(min-width:800px){
  #area:has(.tc){max-width:420px;margin:0 auto;padding:10px}
  #area:has(.tc) .tc-tb{font-size:13px}
  #area:has(.tc) .tc-tb td{padding:2px 6px}
  .exports:has(#bSave:not([style*="none"])){max-width:420px;margin-left:auto;margin-right:auto}
 }
+
+/* ===== ไอคอน + ปุ่มแก้ไข (ดินสอ) ===== */
+.ic{display:inline-block;vertical-align:-.2em;flex:none}
+.btn .ic,.call .ic,.ph .ic,.hint .ic,.addcard b .ic,.tc-who .ic{margin-right:.4em}
+nav i{display:inline-flex;align-items:center;justify-content:center}
+nav i .ic{vertical-align:middle;margin:0;width:1.25em;height:1.25em}
+.addcard i .ic{margin:0;width:20px;height:20px}
+.logo{display:grid;place-items:center}
+#editBtn{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:60;width:42px;height:42px;padding:0;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid var(--line);color:#6b7080;cursor:pointer;font:inherit}
+#editBtn>.ic{width:21px;height:21px;margin:0}
+#editBtn.on{background:#4a5060;border-color:#4a5060;color:#fff}
+#editBtn .bd{position:absolute;right:-3px;bottom:-3px;width:18px;height:18px;border-radius:50%;background:#fff;border:1px solid var(--line);color:#6b7080;display:grid;place-items:center}
+#editBtn .bd .ic{width:10px;height:10px;margin:0;vertical-align:0}
+#editBtn:active{transform:scale(.94)}
+.w{display:flex;align-items:center;gap:8px}
+.w .who{flex:1;min-width:0}
+.ib{flex:none;width:40px;height:40px;padding:0;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid var(--line)!important;box-shadow:none!important;color:#6b7080;cursor:pointer}
+.ib .ic{width:19px;height:19px;margin:0}
+.ib[data-x="edit"]{color:#4a5060}
+.ib:active{background:#ececf2}
+@media print{#editBtn{display:none}}
 </style>
 </head>
 <body>
 <nav id="nav">
-  <div class="logo">✔</div>
-  <button data-p="check" class="on"><i>📋</i><span>เช็คชื่อ</span></button>
-  <button data-p="workers"><i>👷</i><span>รายชื่อ</span></button>
-  <button data-p="report"><i>📊</i><span>รายงาน</span></button>
+  <div class="logo"><span data-ic="check"></span></div>
+  <button data-p="check" class="on"><i data-ic="clipboard"></i><span>เช็คชื่อ</span></button>
+  <button data-p="workers"><i data-ic="hardhat"></i><span>รายชื่อ</span></button>
+  <button data-p="report"><i data-ic="chart"></i><span>รายงาน</span></button>
 </nav>
+<button id="editBtn" type="button" aria-label="แก้ไข"></button>
 <main>
   <section id="check" class="page on">
     <h1>เช็คชื่อรายวัน</h1>
@@ -137,14 +159,14 @@ nav button.on{background:#ececf2!important;border:1px solid var(--line)!importan
     <div class="search"><input type="search" id="q1" placeholder="ค้นหา ชื่อ / ชื่อเล่น / ตำแหน่ง / เบอร์โทร"></div>
     <div class="found" id="c1"></div>
     <div id="list"></div>
-    <div class="savebar"><button class="btn red big" id="save">💾 บันทึกข้อมูล</button></div>
+    <div class="savebar"><button class="btn red big" id="save"><span data-ic="save"></span>บันทึกข้อมูล</button></div>
   </section>
 
   <section id="workers" class="page">
     <h1>จัดการรายชื่อคนงาน</h1>
-    <p class="hint">🔒 ต้องใช้รหัสแอดมินจึงแก้ไขได้</p>
+    <p class="hint"><span data-ic="lock"></span>ต้องใช้รหัสแอดมินจึงแก้ไขได้</p>
     <button class="addcard" id="add">
-      <span><b>＋ เพิ่มคนงานใหม่</b><small>ชื่อ-นามสกุล ชื่อเล่น เบอร์โทร</small></span><i>→</i>
+      <span><b><span data-ic="plus"></span>เพิ่มคนงานใหม่</b><small>ชื่อ-นามสกุล ชื่อเล่น เบอร์โทร</small></span><i data-ic="arrow"></i>
     </button>
     <div class="search"><input type="search" id="q2" placeholder="ค้นหา ชื่อ / ชื่อเล่น / ตำแหน่ง / เบอร์โทร"></div>
     <div class="found" id="c2"></div>
@@ -161,11 +183,12 @@ nav button.on{background:#ececf2!important;border:1px solid var(--line)!importan
       <select id="sym"><option value="✓">มา แสดงเป็น ✓</option><option value="I">มา แสดงเป็น I</option><option value="ม">มา แสดงเป็น ม</option></select>
     </div>
     <div class="exports">
-      <button class="btn ghost" id="bPrint">🖨 พิมพ์</button>
-      <button class="btn ghost" id="bPdf">📄 โหลด PDF</button>
-      <button class="btn ghost" id="bSave" style="display:none">💾 บันทึกบัตร</button>
-      <button class="btn ghost" id="bXls">📗 Excel</button>
-      <button class="btn ghost" id="bImg">🖼 รูปภาพ</button>
+      <button class="btn ghost" id="bPrint"><span data-ic="printer"></span>พิมพ์</button>
+      <button class="btn ghost" id="bPdf"><span data-ic="file"></span>โหลด PDF</button>
+      <button class="btn ghost" id="bSave" style="display:none"><span data-ic="download"></span>บันทึกบัตร</button>
+      <button class="btn ghost" id="bAllPdf"><span data-ic="files"></span>PDF บัตรทุกคน</button>
+      <button class="btn ghost" id="bXls"><span data-ic="table"></span>Excel</button>
+      <button class="btn ghost" id="bImg"><span data-ic="image"></span>รูปภาพ</button>
     </div>
     <div id="area" class="card"></div>
   </section>
@@ -186,10 +209,10 @@ nav button.on{background:#ececf2!important;border:1px solid var(--line)!importan
 <dialog id="dsave">
   <h2>บันทึกบัตรเป็น</h2>
   <div class="pick">
-    <button class="btn" data-k="bImg">🖼 รูปภาพ (PNG)</button>
-    <button class="btn" data-k="bPdf">📄 ไฟล์ PDF</button>
-    <button class="btn" data-k="bXls">📗 ไฟล์ Excel</button>
-    <button class="btn" data-k="bPrint">🖨 พิมพ์</button>
+    <button class="btn" data-k="bImg"><span data-ic="image"></span>รูปภาพ (PNG)</button>
+    <button class="btn" data-k="bPdf"><span data-ic="file"></span>ไฟล์ PDF</button>
+    <button class="btn" data-k="bXls"><span data-ic="table"></span>ไฟล์ Excel</button>
+    <button class="btn" data-k="bPrint"><span data-ic="printer"></span>พิมพ์</button>
     <button class="btn ghost">ปิด</button>
   </div>
 </dialog>
@@ -199,7 +222,23 @@ nav button.on{background:#ececf2!important;border:1px solid var(--line)!importan
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="app.js"></script>
 <script>
-/* ===== ส่วนเสริม (ใช้ได้กับ app.js เดิม ไม่ต้องแก้ app.js) ===== */
+/* ===== ส่วนเสริม ===== */
+(()=>{
+  /* ไอคอน: ใส่ไอคอนในปุ่มที่ระบุ data-ic */
+  $$('[data-ic]').forEach(el=>{el.innerHTML=ic(el.dataset.ic)});
+  /* ปุ่มแก้ไข (ดินสอ) มุมขวาสุด: แตะเพื่อปลดล็อกแอดมิน / แตะอีกครั้งเพื่อล็อก */
+  const eb=$('#editBtn');
+  const syncEdit=()=>{
+    eb.classList.toggle('on',unlocked);
+    const t=unlocked?'โหมดแก้ไขเปิดอยู่ (แตะเพื่อล็อก)':'แก้ไข (ต้องใส่รหัสแอดมิน)';
+    eb.title=t;eb.setAttribute('aria-label',t);
+    eb.innerHTML=ic('pencil')+'<span class="bd">'+ic(unlocked?'unlock':'lock')+'</span>';
+  };
+  const _admin=admin;
+  admin=function(){const r=_admin();syncEdit();return r};
+  eb.onclick=()=>{if(unlocked){commit();unlocked=false}else if(!admin())return;syncEdit()};
+  syncEdit();
+})();
 (()=>{
   /* 1) เฉพาะแอดมินเช็คชื่อได้ */
   const gate=(el,test)=>el.addEventListener('click',e=>{
@@ -216,12 +255,12 @@ nav button.on{background:#ececf2!important;border:1px solid var(--line)!importan
   commit=function(){if(!dirty||!unlocked)return;db.att[date]=draft;persist();dirty=false};
 
   /* 2) กดเบอร์โทรออกได้ทุกหน้า */
-  const tel=p=>p?`<a class="ph" href="tel:${esc(p.replace(/[^\d+]/g,''))}">📞 ${esc(p)}</a>`:'';
+  const tel=p=>p?`<a class="ph" href="tel:${esc(p.replace(/[^\d+]/g,''))}">${ic('phone','#2f3b38')}${esc(p)}</a>`:'';
   drawWorkers=function(){
     $('.tabs button[data-a="1"]').textContent='ทำงานอยู่ ('+db.workers.filter(w=>w.active).length+')';
     $('#wlist').innerHTML=db.workers.filter(w=>w.active===tabActive).map(w=>`<div class="w" data-id="${w.id}">
      <div class="who"><b>${esc(w.nick)}</b><small>${esc(full(w))}${w.pos?' · '+esc(w.pos):''}</small>${tel(w.phone)}</div>
-     ${tabActive?`<button class="btn" data-x="edit">แก้ไข</button><button class="btn" data-x="del">ลบ</button>`:`<button class="btn" data-x="res">กู้คืน</button>`}</div>`).join('')||'<p>ไม่มีรายการ</p>';
+     ${tabActive?`<button class="ib" data-x="del" title="ลบ" aria-label="ลบ">${ic('trash')}</button><button class="ib" data-x="edit" title="แก้ไข" aria-label="แก้ไข">${ic('pencil')}</button>`:`<button class="ib" data-x="res" title="กู้คืน" aria-label="กู้คืน">${ic('undo')}</button>`}</div>`).join('')||'<p>ไม่มีรายการ</p>';
     run2();
   };
   const dr=drawReport;
@@ -237,21 +276,24 @@ nav button.on{background:#ececf2!important;border:1px solid var(--line)!importan
     $('#bSave').style.display=view==='one'?'':'none';
   };
   /* รายบุคคล แบบใบตอกบัตรเข้างาน */
-  function timecard(){
-    const w=db.workers.find(x=>x.id===$('#person').value);if(!w)return;
-    const m=$('#month').value||date.slice(0,7),[y,mo]=m.split('-').map(Number),nd=new Date(y,mo,0).getDate(),n={};
+  function tcHTML(w,m){
+    m=m||$('#month').value||date.slice(0,7);const [y,mo]=m.split('-').map(Number),nd=new Date(y,mo,0).getDate(),n={};
     let rows='';
     for(let d=1;d<=nd;d++){
       const k=m+'-'+pad(d),wd=new Date(y,mo-1,d).getDay(),r=(db.att[k]||{})[w.id]||{};
       if(r.s)n[r.s]=(n[r.s]||0)+1;
       rows+=`<tr class="${wd%6?'':'we'}"><td class="l">${thDate(k)}</td><td>${WD[wd]}</td>${r.s?`<td class="c-${r.s}">${S[r.s][0]}</td>`:'<td></td>'}<td class="l">${esc(r.n||'')}</td></tr>`;
     }
-    $('#area').innerHTML=`<div class="tc">
+    return `<div class="tc">
       <div class="tc-h"><span>บัตรบันทึกเวลาทำงาน</span><span>เดือน ${mo}/${y+543}</span></div>
       <div class="tc-who"><b>${esc(w.nick)}</b> ${esc(full(w))}${w.pos?' · '+esc(w.pos):''}${w.phone?'<br>'+tel(w.phone):''}</div>
       <table class="t tc-tb" id="tbl"><tr><th class="l">วันที่</th><th>วัน</th><th>สถานะ</th><th class="l">หมายเหตุ</th></tr>${rows}</table>
       <div class="tc-sum">${Object.entries(S).map(([k,v])=>`<span class="sw c-${k}">${v[0]} <b>${n[k]||0}</b></span>`).join('')}</div>
       <div class="tc-sig"><span>ลงชื่อพนักงาน</span><span>ผู้ตรวจสอบ</span></div></div>`;
+  }
+  function timecard(){
+    const w=db.workers.find(x=>x.id===$('#person').value);if(!w)return;
+    $('#area').innerHTML=tcHTML(w);
   }
   $('#month').onchange=$('#sym').onchange=$('#person').onchange=drawReport;
 
@@ -326,7 +368,7 @@ nav button.on{background:#ececf2!important;border:1px solid var(--line)!importan
   const fname=()=>{const w=db.workers.find(x=>x.id===$('#person').value);return (view==='one'&&w?'บัตร_'+w.nick:'เช็คชื่อ')+'_'+$('#month').value};
   $('#bPdf').onclick=async()=>{
     if(!window.html2canvas||!window.jspdf)return alert('โหลดตัวสร้าง PDF ไม่ได้ (ต้องต่อเน็ต)');
-    const b=$('#bPdf'),old=b.textContent;b.textContent='⏳ กำลังสร้าง...';
+    const b=$('#bPdf'),old=b.innerHTML;b.textContent='กำลังสร้าง...';
     try{
       const land=view==='all',c=await snap(land?1400:720);
       const pdf=new window.jspdf.jsPDF({orientation:land?'l':'p',unit:'mm',format:'a4'});
@@ -341,7 +383,7 @@ nav button.on{background:#ececf2!important;border:1px solid var(--line)!importan
       }
       pdf.save(fname()+'.pdf');
     }catch(e){alert('สร้าง PDF ไม่สำเร็จ')}
-    b.textContent=old;
+    b.innerHTML=old;
   };
   $('#bImg').onclick=async()=>{
     if(!window.html2canvas)return alert('โหลดตัวสร้างรูปไม่ได้ (ต้องต่อเน็ต)');
@@ -349,6 +391,29 @@ nav button.on{background:#ececf2!important;border:1px solid var(--line)!importan
       const c=await snap(view==='all'?1400:720);
       const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=fname()+'.png';a.click();
     }catch(e){alert('สร้างรูปไม่สำเร็จ')}
+  };
+  $('#bAllPdf').onclick=async()=>{
+    if(!window.html2canvas||!window.jspdf)return alert('โหลดตัวสร้าง PDF ไม่ได้ (ต้องต่อเน็ต)');
+    const ws=db.workers.filter(w=>w.active);if(!ws.length)return alert('ไม่มีรายชื่อคนงาน');
+    const b=$('#bAllPdf'),old=b.innerHTML,m=$('#month').value||date.slice(0,7);
+    const pdf=new window.jspdf.jsPDF({orientation:'p',unit:'mm',format:'a4'});
+    const PW=pdf.internal.pageSize.getWidth(),PH=pdf.internal.pageSize.getHeight(),M=8;
+    try{
+      for(let i=0;i<ws.length;i++){
+        b.textContent='กำลังสร้าง '+(i+1)+'/'+ws.length;
+        const box=document.createElement('div');
+        box.style.cssText='position:fixed;left:-99999px;top:0;background:#fff;padding:12px;width:560px';
+        box.innerHTML=tcHTML(ws[i],m).replace(' id="tbl"','');
+        document.body.appendChild(box);
+        let c;try{c=await html2canvas(box,{scale:2,backgroundColor:'#fff'})}finally{box.remove()}
+        let w=PW-2*M,h=c.height*w/c.width;
+        if(h>PH-2*M){h=PH-2*M;w=c.width*h/c.height}
+        if(i)pdf.addPage();
+        pdf.addImage(c.toDataURL('image/jpeg',.95),'JPEG',(PW-w)/2,M,w,h);
+      }
+      pdf.save('บัตรตอก_ทุกคน_'+m+'.pdf');
+    }catch(e){alert('สร้าง PDF ไม่สำเร็จ')}
+    b.innerHTML=old;
   };
   $('#bSave').onclick=()=>$('#dsave').showModal();
   $('#dsave').onclick=e=>{
