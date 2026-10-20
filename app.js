@@ -19,6 +19,34 @@ const thDate=s=>{const d=parse(s);return d.getDate()+'/'+(d.getMonth()+1)+'/'+(d
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const full=w=>(w.first+' '+(w.last||'')).trim();
 
+
+/* ---- ชุดไอคอนเส้น (ออกแบบเอง) ---- */
+const _R=(x,y,w,h,r)=>`M${x+r} ${y}h${w-2*r}a${r} ${r} 0 0 1 ${r} ${r}v${h-2*r}a${r} ${r} 0 0 1 ${-r} ${r}h${-(w-2*r)}a${r} ${r} 0 0 1 ${-r} ${-r}v${-(h-2*r)}a${r} ${r} 0 0 1 ${r} ${-r}z`;
+const _C=(x,y,r)=>`M${x-r} ${y}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*r} 0`;
+const ICP={
+ check:[null,['M5 12.5l4.5 4.5L19 7.5']],
+ clipboard:[_R(5,4.5,14,16.5,3),[_R(5,4.5,14,16.5,3),'M9.5 4.5v-.7A1.3 1.3 0 0 1 10.8 2.5h2.4a1.3 1.3 0 0 1 1.3 1.3v.7','M8.8 13.3l2.4 2.4 4-4.4']],
+ hardhat:['M5.5 15a6.5 6.5 0 0 1 13 0z',['M5.5 15a6.5 6.5 0 0 1 13 0',_R(3,15,18,3.6,1.2),'M12 8.4v3.4']],
+ chart:[_R(4.5,12,3.6,7.5,1)+_R(10.2,7.5,3.6,12,1)+_R(15.9,4,3.6,15.5,1),[_R(4.5,12,3.6,7.5,1),_R(10.2,7.5,3.6,12,1),_R(15.9,4,3.6,15.5,1)]],
+ phone:['M6.6 3.8h2.9l1.4 3.6-1.8 1.2a11 11 0 0 0 5.3 5.3l1.2-1.8 3.6 1.4v2.9a2 2 0 0 1-2.2 2A14.6 14.6 0 0 1 4.6 6a2 2 0 0 1 2-2.2z',['M6.6 3.8h2.9l1.4 3.6-1.8 1.2a11 11 0 0 0 5.3 5.3l1.2-1.8 3.6 1.4v2.9a2 2 0 0 1-2.2 2A14.6 14.6 0 0 1 4.6 6a2 2 0 0 1 2-2.2z']],
+ pencil:['M14.5 5.5l4 4L8.8 19.2 4.2 20l.8-4.6z',['M14.5 5.5l4 4L8.8 19.2 4.2 20l.8-4.6z','M12.6 7.4l4 4','M16.2 3.8a1.9 1.9 0 0 1 2.7 0l1.3 1.3a1.9 1.9 0 0 1 0 2.7L18.5 9.5']],
+ trash:['M6.5 7l.8 11.2c.1.9.8 1.6 1.7 1.6h6c.9 0 1.6-.7 1.7-1.6L17.5 7z',['M4.5 7h15','M9.5 7V5.2c0-.7.5-1.2 1.2-1.2h2.6c.7 0 1.2.5 1.2 1.2V7','M6.5 7l.8 11.2c.1.9.8 1.6 1.7 1.6h6c.9 0 1.6-.7 1.7-1.6L17.5 7','M10 11v5.5M14 11v5.5']],
+ undo:[null,['M8.5 5.5l-4 4 4 4','M5 9.5h9a5 5 0 0 1 0 10h-3']],
+ save:['M5.5 4h10.2L20 8.3v10.2a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4z',['M5.5 4h10.2L20 8.3v10.2a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4z','M8 4v4.5h6.5V4','M7.5 20v-5.5h9V20']],
+ search:[null,[_C(10.5,10.5,6),'M15.2 15.2L20 20']],
+ printer:[_R(4,9,16,8,2),['M7 9V4h10v5',_R(4,9,16,8,2),'M7 14h10v6H7z']],
+ file:['M6.5 3.5h7l5 5v11a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1z',['M6.5 3.5h7l5 5v11a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1z','M13.5 3.5v5h5','M8.5 14h7M8.5 17h5']],
+ files:['M4.5 7.5h8l3.5 3.5v9a1 1 0 0 1-1 1H5.5a1 1 0 0 1-1-1v-11.5z',['M9.5 3.5H17a1 1 0 0 1 1 1V16','M4.5 7.5h8l3.5 3.5v9a1 1 0 0 1-1 1H5.5a1 1 0 0 1-1-1v-11.5z','M12.5 7.5V11H16']],
+ table:[_R(4,5,16,14,2),[_R(4,5,16,14,2),'M4 10h16M4 14.5h16M10 5v14']],
+ image:[_R(4,5,16,14,2.5),[_R(4,5,16,14,2.5),_C(9,10,1.6),'M5 17.5l4.5-4.5 3.5 3.5 2.5-2.5 3.5 3.5']],
+ download:[null,['M12 4v11','M7.5 11l4.5 4.5 4.5-4.5','M5 19.5h14']],
+ lock:[_R(5.5,10.5,13,9.5,2.5),[_R(5.5,10.5,13,9.5,2.5),'M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5']],
+ unlock:[_R(5.5,10.5,13,9.5,2.5),[_R(5.5,10.5,13,9.5,2.5),'M8.5 10.5V8a3.5 3.5 0 0 1 6.8-1.2']],
+ plus:[null,['M12 5v14M5 12h14']],
+ arrow:[null,['M5 12h14','M13 6l6 6-6 6']]
+};
+function ic(n,c){const p=ICP[n];if(!p)return'';const col=c||'currentColor';return`<svg class="ic" viewBox="0 0 24 24" width="1.15em" height="1.15em" fill="none" stroke="${col}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p[0]?`<path d="${p[0]}" fill="${col}" fill-opacity=".13" stroke="none"/>`:''}${p[1].map(d=>`<path d="${d}"/>`).join('')}</svg>`}
+
 /* ---- นำทาง ---- */
 $$('#nav button').forEach(b=>b.onclick=()=>{
   if($('#check').classList.contains('on'))commit();
@@ -48,7 +76,7 @@ function drawCheck(){
   const ws=db.workers.filter(w=>w.active);
   $('#list').innerHTML=ws.map((w,i)=>{const r=draft[w.id]||{};return`<div class="row ${r.s?'st-'+r.s:''}" data-id="${w.id}">
    <div class="av">${i+1}</div><div class="who"><b>${esc(w.nick)}</b><small>${esc(full(w))}${w.pos?' · '+esc(w.pos):''}</small></div>
-   ${w.phone?`<a class="call" href="tel:${esc(w.phone.replace(/[^\d+]/g,''))}">📞 ${esc(w.phone)}</a>`:'<span class="call none">ไม่มีเบอร์</span>'}
+   ${w.phone?`<a class="call" href="tel:${esc(w.phone.replace(/[^\d+]/g,''))}">${ic('phone')}${esc(w.phone)}</a>`:'<span class="call none">ไม่มีเบอร์</span>'}
    <div class="chips">${Object.entries(S).map(([k,v])=>`<button data-s="${k}" class="${r.s===k?'on':''}">${v[0]}</button>`).join('')}</div>
    <input class="note" placeholder="หมายเหตุ" value="${esc(r.n||'')}"></div>`}).join('')||'<p>ยังไม่มีรายชื่อ ไปที่แท็บ “รายชื่อ”</p>';
   drawSum();
@@ -70,7 +98,7 @@ $('#list').addEventListener('input',e=>{
   if(!e.target.classList.contains('note'))return;
   const id=e.target.closest('.row').dataset.id;(draft[id]=draft[id]||{}).n=e.target.value;dirty=true;
 });
-$('#save').onclick=()=>{dirty=true;commit();const b=$('#save');b.textContent='✅ บันทึกแล้ว';setTimeout(()=>b.textContent='💾 บันทึกข้อมูล',1400)};
+$('#save').onclick=()=>{dirty=true;commit();const b=$('#save');b.innerHTML=ic('check')+'บันทึกแล้ว';setTimeout(()=>b.innerHTML=ic('save')+'บันทึกข้อมูล',1400)};
 
 /* ---- จัดการรายชื่อ (แอดมิน) ---- */
 let unlocked=false,tabActive=true,editId=null;
@@ -79,7 +107,7 @@ $$('.tabs button[data-a]').forEach(b=>b.onclick=()=>{tabActive=b.dataset.a==='1'
 function drawWorkers(){
   $('#wlist').innerHTML=db.workers.filter(w=>w.active===tabActive).map((w,i)=>`<div class="w" data-id="${w.id}">
    <div class="av">${i+1}</div><div class="who"><b>${esc(w.nick)}</b><small> ${esc(full(w))}${w.pos?' · '+esc(w.pos):''}</small><br><small>${esc(w.phone||'-')}</small></div>
-   ${tabActive?`<button class="btn" data-x="edit">✏️ แก้ไข</button><button class="btn" data-x="del">🗑 ลบ</button>`:`<button class="btn" data-x="res">↩️ กู้คืน</button>`}</div>`).join('')||'<p>ไม่มีรายการ</p>';
+   ${tabActive?`<button class="ib" data-x="del" title="ลบ" aria-label="ลบ">${ic('trash')}</button><button class="ib" data-x="edit" title="แก้ไข" aria-label="แก้ไข">${ic('pencil')}</button>`:`<button class="ib" data-x="res" title="กู้คืน" aria-label="กู้คืน">${ic('undo')}</button>`}</div>`).join('')||'<p>ไม่มีรายการ</p>';
 }
 $('#add').onclick=()=>{if(!admin())return;openDlg(null)};
 $('#wlist').onclick=e=>{
