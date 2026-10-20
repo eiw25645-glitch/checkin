@@ -133,7 +133,11 @@ nav i .ic{vertical-align:middle;margin:0;width:1.25em;height:1.25em}
 .ib .ic{width:19px;height:19px;margin:0}
 .ib[data-x="edit"]{color:#4a5060}
 .ib:active{background:#ececf2}
-@media print{#editBtn{display:none}}
+/* แถบบันทึก: ซ่อนไว้ เด้งขึ้นเมื่อแอดมินปลดล็อก */
+.savebar{transform:translateY(160%);opacity:0;visibility:hidden;pointer-events:none;transition:transform .28s ease,opacity .2s ease,visibility 0s linear .28s}
+body.admin .savebar{transform:none;opacity:1;visibility:visible;pointer-events:auto;transition:transform .28s ease,opacity .2s ease}
+@media(max-width:799px){body:not(.admin) main{padding-bottom:calc(64px + env(safe-area-inset-bottom))!important}}
+@media print{#editBtn,.savebar{display:none}}
 </style>
 </head>
 <body>
@@ -229,7 +233,7 @@ nav i .ic{vertical-align:middle;margin:0;width:1.25em;height:1.25em}
   /* ปุ่มแก้ไข (ดินสอ) มุมขวาสุด: แตะเพื่อปลดล็อกแอดมิน / แตะอีกครั้งเพื่อล็อก */
   const eb=$('#editBtn');
   const syncEdit=()=>{
-    eb.classList.toggle('on',unlocked);
+    eb.classList.toggle('on',unlocked);document.body.classList.toggle('admin',unlocked);
     const t=unlocked?'โหมดแก้ไขเปิดอยู่ (แตะเพื่อล็อก)':'แก้ไข (ต้องใส่รหัสแอดมิน)';
     eb.title=t;eb.setAttribute('aria-label',t);
     eb.innerHTML=ic('pencil')+'<span class="bd">'+ic(unlocked?'unlock':'lock')+'</span>';
