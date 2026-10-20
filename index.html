@@ -137,6 +137,8 @@ nav i .ic{vertical-align:middle;margin:0;width:1.25em;height:1.25em}
 .savebar{transform:translateY(160%);opacity:0;visibility:hidden;pointer-events:none;transition:transform .28s ease,opacity .2s ease,visibility 0s linear .28s}
 body.admin .savebar{transform:none;opacity:1;visibility:visible;pointer-events:auto;transition:transform .28s ease,opacity .2s ease}
 @media(max-width:799px){body:not(.admin) main{padding-bottom:calc(64px + env(safe-area-inset-bottom))!important}}
+/* ปุ่มแก้ไข/ลบ/กู้คืนในรายชื่อ: เห็นเฉพาะแอดมิน */
+body:not(.admin) .ib{display:none}
 @media print{#editBtn,.savebar{display:none}}
 </style>
 </head>
@@ -159,7 +161,6 @@ body.admin .savebar{transform:none;opacity:1;visibility:visible;pointer-events:a
       <button class="btn ghost" id="today">วันนี้</button>
     </div>
     <div class="sum" id="sum"></div>
-    <button class="dash" id="allcome">ตั้งคนที่ยังไม่เช็คเป็น “มา” ทั้งหมด</button>
     <div class="search"><input type="search" id="q1" placeholder="ค้นหา ชื่อ / ชื่อเล่น / ตำแหน่ง / เบอร์โทร"></div>
     <div class="found" id="c1"></div>
     <div id="list"></div>
@@ -249,7 +250,6 @@ body.admin .savebar{transform:none;opacity:1;visibility:visible;pointer-events:a
     if(test&&!test(e))return;
     if(!admin()){e.stopImmediatePropagation();e.preventDefault()}
   },true);
-  gate($('#allcome'));
   gate($('#save'));
   gate($('#list'),e=>e.target.closest('.chips button'));
   $('#list').addEventListener('focusin',e=>{
