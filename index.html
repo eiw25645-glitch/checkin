@@ -138,8 +138,13 @@ nav i .ic{vertical-align:middle;margin:0;width:1.25em;height:1.25em}
 body.admin .savebar{transform:none;opacity:1;visibility:visible;pointer-events:auto;transition:transform .28s ease,opacity .2s ease}
 @media(max-width:799px){body:not(.admin) main{padding-bottom:calc(64px + env(safe-area-inset-bottom))!important}}
 /* ปุ่มแก้ไข/ลบ/กู้คืนในรายชื่อ: เห็นเฉพาะแอดมิน */
-body:not(.admin) .ib{display:none}
+body:not(.admin) .ib,body:not(.admin) .addcard{display:none}
 @media print{#editBtn,.savebar{display:none}}
+#dimg{border:1px solid var(--line);border-radius:16px;padding:14px;max-width:min(92vw,420px);max-height:92vh;overflow:auto}
+#dimg h2{margin:0 0 4px;font-size:18px}
+.dimg-t{margin:0 0 10px;color:var(--mut);font-size:14px}
+#dimg img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:8px;-webkit-touch-callout:default}
+#dimg .acts{margin-top:10px;display:flex;justify-content:flex-end}
 </style>
 </head>
 <body>
@@ -211,15 +216,11 @@ body:not(.admin) .ib{display:none}
   </form>
 </dialog>
 
-<dialog id="dsave">
-  <h2>บันทึกบัตรเป็น</h2>
-  <div class="pick">
-    <button class="btn" data-k="bImg"><span data-ic="image"></span>รูปภาพ (PNG)</button>
-    <button class="btn" data-k="bPdf"><span data-ic="file"></span>ไฟล์ PDF</button>
-    <button class="btn" data-k="bXls"><span data-ic="table"></span>ไฟล์ Excel</button>
-    <button class="btn" data-k="bPrint"><span data-ic="printer"></span>พิมพ์</button>
-    <button class="btn ghost">ปิด</button>
-  </div>
+<dialog id="dimg">
+  <h2>บันทึกรูปบัตร</h2>
+  <p class="dimg-t">กดค้างที่รูป แล้วเลือก “บันทึกรูปภาพ”</p>
+  <img id="dimgPic" alt="บัตรบันทึกเวลาทำงาน">
+  <div class="acts"><button type="button" class="btn ghost" id="dimgX">ปิด</button></div>
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -267,6 +268,14 @@ body:not(.admin) .ib{display:none}
      ${tabActive?`<button class="ib" data-x="del" title="ลบ" aria-label="ลบ">${ic('trash')}</button><button class="ib" data-x="edit" title="แก้ไข" aria-label="แก้ไข">${ic('pencil')}</button>`:`<button class="ib" data-x="res" title="กู้คืน" aria-label="กู้คืน">${ic('undo')}</button>`}</div>`).join('')||'<p>ไม่มีรายการ</p>';
     run2();
   };
+  /* เตรียมรูปบัตรไว้ล่วงหน้า เพื่อให้กดบันทึกแล้วเปิดหน้าต่างแชร์ได้ทันที (มือถือบังคับให้เรียกทันทีหลังแตะ) */
+  let cardB=null,cardP=null,cardT=0,cardTimer=null;
+  const mkCard=()=>snap(640).then(c=>new Promise((ok,no)=>c.toBlob(x=>x?ok(x):no(),'image/png')));
+  function resetCard(){cardT++;cardB=null;cardP=null;clearTimeout(cardTimer)}
+  function prepCard(){
+    resetCard();const t=cardT;if(!window.html2canvas)return;
+    cardTimer=setTimeout(()=>{const p=mkCard();cardP=p;p.then(x=>{if(t===cardT)cardB=x}).catch(()=>{})},300);
+  }
   const dr=drawReport;
   drawReport=function(){
     dr();
@@ -274,7 +283,7 @@ body:not(.admin) .ib{display:none}
     if(p)p.innerHTML=p.innerHTML.replace(/โทร\s+([\d\-+]+)/,(m,n)=>tel(n));
     const t=$('#tbl');
     if(t&&view==='all')t.classList.add('allv');   // ตารางรวม: "มา" ไม่ลงสี
-    if(view==='one')timecard();
+    if(view==='one'){timecard();prepCard()}else resetCard();
     // รายบุคคล: รวมปุ่มส่งออกเป็นปุ่มเดียวให้เลือกรูปแบบ
     ['bPrint','bPdf','bXls','bImg'].forEach(i=>$('#'+i).style.display=view==='one'?'none':'');
     $('#bSave').style.display=view==='one'?'':'none';
@@ -419,12 +428,29 @@ body:not(.admin) .ib{display:none}
     }catch(e){alert('สร้าง PDF ไม่สำเร็จ')}
     b.innerHTML=old;
   };
-  $('#bSave').onclick=()=>$('#dsave').showModal();
-  $('#dsave').onclick=e=>{
-    const b=e.target.closest('button');if(!b)return;
-    $('#dsave').close();
-    if(b.dataset.k)setTimeout(()=>$('#'+b.dataset.k).click(),50);
+  /* บันทึกบัตร = บันทึกเป็นรูปภาพ (มือถือ: เปิดหน้าต่างแชร์ → "บันทึกรูปภาพ" ลงเครื่อง) */
+  $('#bSave').onclick=async()=>{
+    if(!window.html2canvas)return alert('โหลดตัวสร้างรูปไม่ได้ (ต้องต่อเน็ต)');
+    const b=$('#bSave');let blob=cardB;
+    if(!blob){
+      const old=b.innerHTML;b.textContent='กำลังสร้างรูป...';
+      try{blob=await(cardP||mkCard())}catch(e){alert('สร้างรูปไม่สำเร็จ');b.innerHTML=old;return}
+      b.innerHTML=old;
+    }
+    const name=fname()+'.png',file=new File([blob],name,{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:name});return}
+      catch(e){if(e&&e.name==='AbortError')return}
+    }
+    const url=URL.createObjectURL(blob);
+    if(matchMedia('(pointer:coarse)').matches){      // มือถือที่แชร์ไม่ได้: โชว์รูปให้กดค้างบันทึก
+      $('#dimgPic').src=url;$('#dimg').showModal();
+    }else{
+      const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);
+    }
   };
+  $('#dimgX').onclick=()=>$('#dimg').close();
+  $('#dimg').addEventListener('close',()=>{const u=$('#dimgPic').src;$('#dimgPic').removeAttribute('src');if(u.startsWith('blob:'))URL.revokeObjectURL(u)});
 })();
 </script>
 </body>
