@@ -86,7 +86,6 @@ function drawSum(){
   ws.forEach(w=>{const s=(draft[w.id]||{}).s;if(s)n[s]=(n[s]||0)+1;else u++});
   $('#sum').innerHTML=Object.entries(S).map(([k,v])=>`<span>${v[0]} ${n[k]||0}</span>`).join('')+`<span>ยังไม่เช็ค ${u}</span>`;
 }
-$('#allcome').onclick=()=>{db.workers.filter(w=>w.active).forEach(w=>{const r=draft[w.id]=draft[w.id]||{};if(!r.s)r.s='come'});dirty=true;drawCheck()};
 $('#list').addEventListener('click',e=>{
   const b=e.target.closest('.chips button');if(!b)return;
   const row=b.closest('.row'),id=row.dataset.id,r=draft[id]=draft[id]||{};
