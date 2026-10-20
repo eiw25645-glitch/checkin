@@ -139,6 +139,7 @@ body.admin .savebar{transform:none;opacity:1;visibility:visible;pointer-events:a
 @media(max-width:799px){body:not(.admin) main{padding-bottom:calc(64px + env(safe-area-inset-bottom))!important}}
 /* ปุ่มแก้ไข/ลบ/กู้คืนในรายชื่อ: เห็นเฉพาะแอดมิน */
 body:not(.admin) .ib,body:not(.admin) .addcard{display:none}
+#workers{padding-top:48px}
 @media print{#editBtn,.savebar{display:none}}
 #dimg{border:1px solid var(--line);border-radius:16px;padding:14px;max-width:min(92vw,420px);max-height:92vh;overflow:auto}
 #dimg h2{margin:0 0 4px;font-size:18px}
@@ -173,14 +174,12 @@ body:not(.admin) .ib,body:not(.admin) .addcard{display:none}
   </section>
 
   <section id="workers" class="page">
-    <h1>จัดการรายชื่อคนงาน</h1>
-    <p class="hint"><span data-ic="lock"></span>ต้องใช้รหัสแอดมินจึงแก้ไขได้</p>
     <button class="addcard" id="add">
       <span><b><span data-ic="plus"></span>เพิ่มคนงานใหม่</b><small>ชื่อ-นามสกุล ชื่อเล่น เบอร์โทร</small></span><i data-ic="arrow"></i>
     </button>
     <div class="search"><input type="search" id="q2" placeholder="ค้นหา ชื่อ / ชื่อเล่น / ตำแหน่ง / เบอร์โทร"></div>
     <div class="found" id="c2"></div>
-    <div class="tabs"><button class="on" data-a="1">ทำงานอยู่</button><button data-a="0">ออกแล้ว</button></div>
+    <div class="tabs"><button class="on" data-a="1">ทำงานอยู่</button></div>
     <div id="wlist"></div>
   </section>
 
